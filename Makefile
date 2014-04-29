@@ -34,12 +34,15 @@ OpenBLAS/libopenblas.a:
 		git clone https://github.com/xianyi/OpenBLAS.git ; \
 	fi
 	(cd OpenBLAS; \
+	 rm *.a *.dll; \
 	 make \
 		CC=gcc \
 		FC=gfortran \
 		BINARY=${BIT} \
-		libs netlib;  \
-	make PREFIX=install install; )
+		libs netlib; \
+	 if [ ! -f libopenblas.a ]; then \
+		cp *.a libopenblas.a; \
+	 fi )
 
 sdpa: sdpa-binary sdpa-copy
 
@@ -110,6 +113,8 @@ sdpam-copy:
 	cp sdpa-install$(BIT)/share/sdpa/mex/*.m $(SDPAM_WIN_DIR)/
 	cp sdpa-install$(BIT)/share/sdpa/mex/CommandList.txt $(SDPAM_WIN_DIR)/
 	cp sdpa-install$(BIT)/share/sdpa/mex/mex*.mexw$(BIT) $(SDPAM_WIN_DIR)/
+	rm -rf $(SDPAM_WIN_DIR)/lib
+	rm -rf $(SDPAM_WIN_DIR)/include
 	zip -r $(SDPAM_WIN_DIR).zip $(SDPAM_WIN_DIR)
 
 test:
