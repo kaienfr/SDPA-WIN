@@ -30,7 +30,7 @@ all: OpenBLAS sdpa sdpam
 OpenBLAS: OpenBLAS/libopenblas.a
 
 OpenBLAS/libopenblas.a:
-	if [ ! -d OpenBLAS ]; then \
+	@if [ ! -d OpenBLAS ]; then \
 		git clone https://github.com/xianyi/OpenBLAS.git ; \
 	fi
 	(cd OpenBLAS; \
@@ -38,7 +38,8 @@ OpenBLAS/libopenblas.a:
 		CC=gcc \
 		FC=gfortran \
 		BINARY=${BIT} \
-		libs netlib;  )
+		libs netlib;  \
+	make PREFIX=install install; )
 
 sdpa: sdpa-binary sdpa-copy
 
@@ -55,6 +56,11 @@ sdpa-copy:
 	cp `find sdpa-install$(BIT) | grep dat-s$$` $(SDPA_WIN_DIR)/
 	(cd $(SDPA_WIN_DIR)/; for i in *.dat-s; do sed -i -e 's/$$/\r/' $$i; done)
 	cp Makefile README.txt $(SDPA_WIN_DIR)/
+	cp -r sdpa-install$(BIT)/include $(SDPA_WIN_DIR)
+	cp sdpa-install$(BIT)/share/sdpa/mumps/build/include/* $(SDPA_WIN_DIR)/include/
+	cp -r sdpa-install$(BIT)/lib $(SDPA_WIN_DIR)
+	cp sdpa-install$(BIT)/share/sdpa/mumps/build/lib/* $(SDPA_WIN_DIR)/lib/
+	cp sdpa-install$(BIT)/share/sdpa/mumps/build/libseq/* $(SDPA_WIN_DIR)/lib/
 	zip -r $(SDPA_WIN_DIR).zip $(SDPA_WIN_DIR)
 
 sdpa-binary: OpenBLAS
